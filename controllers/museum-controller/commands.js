@@ -1,9 +1,13 @@
 const { MuseumModel } = require("../../models");
 const Messages = require("../../messages");
+const { getMuseumPage } = require("./share");
+
+exports.main = (ctx) => {
+    const { message, extra } = Messages.museum.main(ctx);
+    return ctx.reply(message, extra);
+};
 
 exports.getList = async(ctx) => {
-    const paginationData = await MuseumModel.pagination();
-    const museum = paginationData.docs[0];
-    const { message, extra } = Messages.museum.information(ctx, museum, paginationData);
+    const { museum, message, extra } = await getMuseumPage(ctx, 1);
     return ctx.replyWithPhoto(museum.image, extra.load({ caption: message }));
 };

@@ -1,13 +1,22 @@
 const { MuseumModel } = require("../../models");
 const Messages = require("../../messages");
+const { getMuseumPage } = require("./share");
 
 exports.getList = async(ctx) => {
     const [, pageNumber] = ctx.match;
-    const paginationData = await MuseumModel.pagination({ page: Number(pageNumber), limit: 1 });
-    const museum = paginationData.docs[0];
-    const { message, extra } = Messages.museum.information(ctx, museum, paginationData);
-
+    const { museum, message, extra } = await getMuseumPage(ctx, pageNumber);
     ctx.answerCbQuery().catch(console.error);
+
+    return ctx.editMessageMedia({ type: "photo", media: museum.image, caption: message }, extra);
+};
+
+exports.getSubList = async(ctx) => {
+    const [, pageNumber, baseMuseumId, baseMuseumPage] = ctx.match;
+    const paginationData = await MuseumModel.paginationSubList(pageNumber, baseMuseumId);
+    const museum = paginationData.docs[0];
+    const { message, extra } = Messages.museum.subList(ctx, museum, paginationData, baseMuseumId, baseMuseumPage);
+    ctx.answerCbQuery().catch(console.error);
+
     return ctx.editMessageMedia({ type: "photo", media: museum.image, caption: message }, extra);
 };
 

@@ -23,4 +23,5 @@ class Action {
 }
 
 exports.museumList = new Action("museum_list");
+exports.museumSubList = new Action("museum_sublist");
 exports.museumAddress = new Action("museum_address");
